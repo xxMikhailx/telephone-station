@@ -90,10 +90,10 @@ public class MenuConfig {
                             System.out.println("---===Users===---");
                             List<User> users = userService.findAllUsers()
                                     .stream()
-                                    .filter(user -> user.getRole()==0)
+                                    .filter(user -> user.getRole() == 0)
                                     .collect(Collectors.toList());
                             for (int i = 0; i < users.size(); i++) {
-                                System.out.print("\n№" + (i+1) + ".  ");
+                                System.out.print("\n№" + (i + 1) + ".  ");
                                 System.out.println(users.get(i).toString());
                             }
                             System.out.print("\nEnter the owner's number: ");
@@ -102,7 +102,7 @@ public class MenuConfig {
                             if (Util.checkString(line) && Util.validatePhoneNumber(phoneNumber) && Util.validateSetupYear(setupYear)) {
                                 choice = Integer.parseInt(line);
                                 if (choice > 0 && choice <= users.size()) {
-                                    User user =  users.get(choice - 1);
+                                    User user = users.get(choice - 1);
                                     landline = new Landline();
                                     landline.setPhoneNumber(Integer.parseInt(phoneNumber));
                                     landline.setSetupYear(Year.parse(setupYear));
@@ -123,7 +123,7 @@ public class MenuConfig {
                             System.out.println("---===Landlines===---");
                             List<Landline> landlines = landlineService.findAllLandlines();
                             for (int i = 0; i < landlines.size(); i++) {
-                                System.out.print("\n№" + (i+1) + ".  ");
+                                System.out.print("\n№" + (i + 1) + ".  ");
                                 System.out.println(landlines.get(i).toString());
                             }
                             System.out.print("\nEnter the landline's number to be edited: ");
@@ -135,27 +135,35 @@ public class MenuConfig {
                                     Landline previousLandline = landlines.get(choice - 1);
                                     System.out.print("\nEnter phone number. Leave empty to use previous value(" + previousLandline.getPhoneNumber() + "): ");
                                     String phoneNumber = reader.readLine();
-                                    phoneNumber = phoneNumber.isEmpty()?String.valueOf(previousLandline.getPhoneNumber()):phoneNumber;
+                                    phoneNumber = phoneNumber.isEmpty() ? String.valueOf(previousLandline.getPhoneNumber()) : phoneNumber;
                                     System.out.print("\nEnter setup year. Leave empty to use previous value(" + previousLandline.getSetupYear().getValue() + "): ");
                                     String setupYear = reader.readLine();
-                                    setupYear = setupYear.isEmpty()?previousLandline.getSetupYear().toString():setupYear;
+                                    setupYear = setupYear.isEmpty() ? previousLandline.getSetupYear().toString() : setupYear;
                                     System.out.println("---===Users===---");
                                     List<User> users = userService.findAllUsers()
                                             .stream()
-                                            .filter(user -> user.getRole()==0)
+                                            .filter(user -> user.getRole() == 0)
                                             .collect(Collectors.toList());
                                     for (int i = 0; i < users.size(); i++) {
-                                        System.out.print("\n№" + (i+1) + ".  ");
+                                        System.out.print("\n№" + (i + 1) + ".  ");
                                         System.out.println(users.get(i).toString());
                                     }
                                     System.out.print("\nEnter the owner's number. Leave empty to use previous value(" + previousLandline.getUser().getLogin() + "): ");
                                     String userNumber = reader.readLine();
-                                    userNumber = userNumber.isEmpty()?String.valueOf(users.indexOf(previousLandline.getUser())):userNumber;
                                     int choice2;
-                                    if (Util.checkString(userNumber) && Util.validatePhoneNumber(phoneNumber) && Util.validateSetupYear(setupYear)) {
-                                        choice2 = Integer.parseInt(userNumber);
-                                        if (choice2 > 0 && choice2 <= users.size()) {
-                                            User user =  users.get(choice2 - 1);
+                                    if (Util.validatePhoneNumber(phoneNumber) && Util.validateSetupYear(setupYear)) {
+                                        if (userNumber.isEmpty()) {
+                                            choice2 = users.indexOf(previousLandline.getUser());
+                                        } else {
+                                            if (Util.checkString(userNumber)) {
+                                                choice2 = Integer.parseInt(userNumber);
+                                                choice2--;
+                                            } else {
+                                                choice2 = -1;
+                                            }
+                                        }
+                                        if (choice2 >= 0 && choice2 < users.size()) {
+                                            User user = users.get(choice2);
                                             previousLandline.setPhoneNumber(Integer.parseInt(phoneNumber));
                                             previousLandline.setSetupYear(Year.parse(setupYear));
                                             previousLandline.setUser(user);
@@ -177,7 +185,7 @@ public class MenuConfig {
                             System.out.println("---===Landlines===---");
                             List<Landline> landlines = landlineService.findAllLandlines();
                             for (int i = 0; i < landlines.size(); i++) {
-                                System.out.print("\n№" + (i+1) + ".  ");
+                                System.out.print("\n№" + (i + 1) + ".  ");
                                 System.out.println(landlines.get(i).toString());
                             }
                             System.out.print("\nEnter the landline's number to be deleted: ");
@@ -211,7 +219,7 @@ public class MenuConfig {
                 .addEntry(countMenuEntry());
     }
 
-    private MenuEntry phoneNumberMenuEntry(){
+    private MenuEntry phoneNumberMenuEntry() {
         return new MenuEntry("Find phone number by user's surname") {
             @Override
             public void run() {
@@ -220,7 +228,7 @@ public class MenuConfig {
                 try {
                     String line = reader.readLine();
                     int phoneNumber = landlineService.findLandlineNumberByUserSurname(line);
-                    System.out.println(phoneNumber!=0?"Phone number is " + phoneNumber + ".":"Can't find phone number by this surname!");
+                    System.out.println(phoneNumber != 0 ? "Phone number is " + phoneNumber + "." : "Can't find phone number by this surname!");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -228,7 +236,7 @@ public class MenuConfig {
         };
     }
 
-    private MenuEntry countMenuEntry(){
+    private MenuEntry countMenuEntry() {
         return new MenuEntry("Phone's count after specific year") {
             @Override
             public void run() {
